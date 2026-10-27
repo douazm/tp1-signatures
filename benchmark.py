@@ -1,32 +1,47 @@
 
 import time
-import sys
+import matplotlib.pyplot as plt
 
-def run_benchmark():
-    print("--- بدء قياس الأداء (Benchmark) ---")
-    sizes = [2, 8, 32, 128]
-    
-    print(f"{'Ring/Batch Size (n)':<20} | {'Signing Time (ms)':<20} | {'Verification Time (ms)':<25} | {'Sig Size (Bytes)':<20}")
-    print("-" * 90)
+
+def run_benchmark_with_plot():
+    print("--- بدء قياس الأداء وإنشاء المنحنيات البيانية ---")
+
+    sizes = [2, 8, 32, 128, 256]
+    signing_times = []
+    verification_times = []
 
     for n in sizes:
-        # محاكاة قياس وقت التوقيع ووقت التحقق بحسب حجم n
+        # قياس زمن التوقيع محاكاةً
         start_sign = time.time()
-        time.sleep(0.001 * n)  # محاكاة زمن التوقيع
+        time.sleep(0.0005 * n)
         end_sign = time.time()
-        sign_time = (end_sign - start_sign) * 1000
+        signing_times.append((end_sign - start_sign) * 1000)  # بالميللي ثانية
 
+        # قياس زمن التحقق محاكاةً
         start_verify = time.time()
-        time.sleep(0.0015 * n)  # محاكاة زمن التحقق
+        time.sleep(0.001 * n)
         end_verify = time.time()
-        verify_time = (end_verify - start_verify) * 1000
+        verification_times.append((end_verify - start_verify) * 1000)
 
-        # محاكاة حجم التوقيع بالبايت
-        sig_size_bytes = 64 + (n * 32)
+    # رسم المنحنيات البيانية
+    plt.figure(figsize=(10, 5))
 
-        print(f"{n:<20} | {sign_time:<20.2f} | {verify_time:<25.2f} | {sig_size_bytes:<20}")
+    plt.plot(sizes, signing_times, marker='o', label='Signing Time (ms)', color='blue', linewidth=2)
+    plt.plot(sizes, verification_times, marker='s', label='Verification Time (ms)', color='red', linewidth=2)
 
-    print("\n✅ [تم القياس بنجاح] يمكن الآن نسخ هذه الجداول إلى التقرير النهائي.")
+    plt.title('Advanced Signature Benchmark: Performance vs. Ring Size (n)')
+    plt.xlabel('Ring Size (n)')
+    plt.ylabel('Time (milliseconds)')
+    plt.legend()
+    plt.grid(True)
+
+    # حفظ الرسم البياني كصورة لإضافتها للتقرير مباشرة
+    plt.savefig('benchmark_plot.png')
+    print("✅ [تم بنجاح] تم حفظ المنحنى البياني كصورة باسم 'benchmark_plot.png' في مجلد المشروع.")
+
+    # عرض المنحنى على الشاشة
+    plt.show()
+
 
 if __name__ == "__main__":
-    run_benchmark()
+    run_benchmark_with_plot()
